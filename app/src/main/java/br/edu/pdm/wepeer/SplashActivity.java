@@ -89,7 +89,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         mVisible = true;
-        mContentView = findViewById(R.id.fullscreen_content);
+        mContentView = findViewById(R.id.txtWelcome);
 
 
         // Set up the user interaction to manually show or hide the system UI.
