@@ -2,4 +2,14 @@
 <resources>
     <string name="app_name">WePeer</string>
     <string name="welcome_message">Bem-vindo ao WePeer!</string>
+    <string name="dlgSair">Sair</string>
+    <string name="msgSair">Você realmente deseja sair?</string>
+    <string name="opSim">Sim</string>
+    <string name="opNao">Não</string>
+    <string name="opOK">OK</string>
+    <string name="edtLogin">Informe seu login</string>
+    <string name="edtSenha">Informe sua senha</string>
+    <string name="msgLoginSenha">Login e/ou senha inválidos!</string>
+    <string name="btnLogin">Entrar</string>
+    <string name="btnExit">Sair</string>
 </resources>
