@@ -2,20 +2,36 @@ package br.edu.pdm.wepeer;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
 
-    private EditText edtLogin;
-    private EditText edtSenha;
-    private ImageButton btnLogin;
-    private ImageButton btnSair;
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+
+    public EditText edtLogin;
+    public EditText edtSenha;
+    ImageButton btnLogin;
+    ImageButton btnSair;
+    boolean loginStatus;
+    static boolean errored = false;
+    String strLogin;
+    String strSenha;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +47,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         btnLogin.setOnClickListener(this);
         btnSair.setOnClickListener(this);
 
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     @Override
@@ -38,12 +57,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         switch (view.getId()) {
             case R.id.btnLogin:
                 // recuperar valores da tela
-                String strLogin = edtLogin.getText().toString();
-                String strSenha = edtSenha.getText().toString();
-                if (strLogin.trim().equals("tccfreak") && strSenha.trim().equals("tccfreak")) {
-                    Intent it = new Intent(this, PrincipalActivity.class);
-                    startActivity(it);
-                    finish();
+                strLogin = edtLogin.getText().toString();
+                strSenha = edtSenha.getText().toString();
+                if (strLogin.length() != 0 && strLogin != "" && strSenha.length() != 0 && strSenha != "") {
+                    AsyncCallWS task = new AsyncCallWS();
+                    task.execute();
                 } else {
                     edtLogin.setText("");
                     edtSenha.setText("");
@@ -55,6 +73,65 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 sair();
                 break;
         }
+    }
+
+    private class AsyncCallWS extends AsyncTask {
+        @Override
+        protected Void doInBackground(Object[] objects) {
+            loginStatus = WebService.invokeLoginWS(strLogin, strSenha, "authenticateUser");
+            return null;
+        }
+
+        protected void onPostExecute(Void result) {
+            Intent it = new Intent(LoginActivity.this, PrincipalActivity.class);
+            if (!errored) {
+                if (loginStatus) {
+                    startActivity(it);
+                } else {
+                    edtLogin.setText("");
+                    edtSenha.setText("");
+                    Toast.makeText(LoginActivity.this, R.string.msgLoginSenha, Toast.LENGTH_LONG).show();
+                    edtLogin.requestFocus();
+                }
+            }
+            errored = false;
+        }
+    }
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("Login Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        client.disconnect();
     }
 
     private void sair() {
@@ -73,3 +150,5 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         dialogoSair.show();
     }
 }
+
+

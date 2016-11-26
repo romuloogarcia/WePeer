@@ -11,7 +11,7 @@
     <TextView
         android:id="@+id/txtWelcome"
         android:layout_width="match_parent"
-        android:layout_height="220dp"
+        android:layout_height="143dp"
         android:gravity="center"
         android:keepScreenOn="true"
         android:text="@string/welcome_message"
