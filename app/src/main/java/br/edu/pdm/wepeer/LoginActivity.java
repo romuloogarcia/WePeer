@@ -1,12 +1,11 @@
 package br.edu.pdm.wepeer;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -16,6 +15,13 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -59,9 +65,33 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 // recuperar valores da tela
                 strLogin = edtLogin.getText().toString();
                 strSenha = edtSenha.getText().toString();
-                if (strLogin.length() != 0 && strLogin != "" && strSenha.length() != 0 && strSenha != "") {
-                    AsyncCallWS task = new AsyncCallWS();
-                    task.execute();
+                if ((strLogin.length() != 0 && strLogin != "") && (strSenha.length() != 0 && strSenha != "")) {
+                    Toast.makeText(this, "entra", Toast.LENGTH_SHORT).show();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                URL url = new URL("http://ipeer.com.br/session/loginAndroid/" + strLogin + "/" + strSenha);
+
+                                HttpURLConnection urlC = (HttpURLConnection) url.openConnection();
+                                urlC.setDoInput(true);
+                                urlC.setReadTimeout(200000);
+                                urlC.connect();
+
+                                InputStream in = new BufferedInputStream(urlC.getInputStream());
+
+                                BufferedReader br = new BufferedReader(new InputStreamReader(in));
+                                String var = br.readLine();
+                                do {
+                                    Log.d("px", var);
+                                } while ((var = br.readLine()) != null);
+
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
                 } else {
                     edtLogin.setText("");
                     edtSenha.setText("");
@@ -72,29 +102,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.btnSair:
                 sair();
                 break;
-        }
-    }
-
-    private class AsyncCallWS extends AsyncTask {
-        @Override
-        protected Void doInBackground(Object[] objects) {
-            loginStatus = WebService.invokeLoginWS(strLogin, strSenha, "authenticateUser");
-            return null;
-        }
-
-        protected void onPostExecute(Void result) {
-            Intent it = new Intent(LoginActivity.this, PrincipalActivity.class);
-            if (!errored) {
-                if (loginStatus) {
-                    startActivity(it);
-                } else {
-                    edtLogin.setText("");
-                    edtSenha.setText("");
-                    Toast.makeText(LoginActivity.this, R.string.msgLoginSenha, Toast.LENGTH_LONG).show();
-                    edtLogin.requestFocus();
-                }
-            }
-            errored = false;
         }
     }
 
