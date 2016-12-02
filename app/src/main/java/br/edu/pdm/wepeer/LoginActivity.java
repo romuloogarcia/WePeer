@@ -29,8 +29,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public EditText edtSenha;
     ImageButton btnLogin;
     ImageButton btnSair;
-    boolean loginStatus;
-    static boolean errored = false;
     String strLogin;
     String strSenha;
     /**
@@ -65,8 +63,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 // recuperar valores da tela
                 strLogin = edtLogin.getText().toString();
                 strSenha = edtSenha.getText().toString();
-                if ((strLogin.length() != 0 && strLogin != "") && (strSenha.length() != 0 && strSenha != "")) {
-                    Toast.makeText(this, "entra", Toast.LENGTH_SHORT).show();
+                if ((strLogin.length() != 0 && !strLogin.equals("")) && (strSenha.length() != 0 && !strSenha.equals(""))) {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -85,8 +82,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 do {
                                     Log.d("px", var);
                                 } while ((var = br.readLine()) != null);
-
-
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
