@@ -70,6 +70,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         @Override
                         public void run() {
                             try {
+                                logged = false;
                                 URL url = new URL("http://ipeer.com.br/session/loginMobile/" + strLogin + "/" + strSenha);
 
                                 HttpURLConnection urlC = (HttpURLConnection) url.openConnection();
@@ -90,17 +91,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            if (logged) {
-                                Intent it = new Intent(LoginActivity.this, PrincipalActivity.class);
-                                startActivity(it);
-                            } else {
-                                edtLogin.setText("");
-                                edtSenha.setText("");
-                                Toast.makeText(LoginActivity.this, R.string.msgLoginSenha, Toast.LENGTH_LONG).show();
-                                edtLogin.requestFocus();
-                            }
                         }
                     }).start();
+                    if (logged) {
+                        Intent it = new Intent(LoginActivity.this, PrincipalActivity.class);
+                        startActivity(it);
+                    } else {
+                        edtLogin.setText("");
+                        edtSenha.setText("");
+                        Toast.makeText(LoginActivity.this, R.string.msgLoginSenha, Toast.LENGTH_LONG).show();
+                        edtLogin.requestFocus();
+                    }
                 } else {
                     edtLogin.setText("");
                     edtSenha.setText("");
