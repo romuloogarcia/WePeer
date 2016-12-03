@@ -1,6 +1,7 @@
 package br.edu.pdm.wepeer;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -31,6 +32,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     ImageButton btnSair;
     String strLogin;
     String strSenha;
+    boolean logged = false;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -68,7 +70,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         @Override
                         public void run() {
                             try {
-                                URL url = new URL("http://ipeer.com.br/session/loginAndroid/" + strLogin + "/" + strSenha);
+                                URL url = new URL("http://ipeer.com.br/session/loginMobile/" + strLogin + "/" + strSenha);
 
                                 HttpURLConnection urlC = (HttpURLConnection) url.openConnection();
                                 urlC.setDoInput(true);
@@ -81,9 +83,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 String var = br.readLine();
                                 do {
                                     Log.d("px", var);
+                                    if (var.contains("1")) {
+                                        logged = true;
+                                    }
                                 } while ((var = br.readLine()) != null);
                             } catch (Exception e) {
                                 e.printStackTrace();
+                            }
+                            if (logged) {
+                                Intent it = new Intent(LoginActivity.this, PrincipalActivity.class);
+                                startActivity(it);
+                            } else {
+                                edtLogin.setText("");
+                                edtSenha.setText("");
+                                Toast.makeText(LoginActivity.this, R.string.msgLoginSenha, Toast.LENGTH_LONG).show();
+                                edtLogin.requestFocus();
                             }
                         }
                     }).start();
